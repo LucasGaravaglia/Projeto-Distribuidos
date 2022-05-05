@@ -1,11 +1,11 @@
 # Projeto-Distribuidos
 
-## Dependência
+## Requistos
 
 Ter instalado os seguintes pacotes:
 
-- Mosquitto
-- Maven
+- Mosquitto (sudo pacman -S mosquitto)
+- Maven (sudo pacman -S maven)
 
 ## Intruções para rodar o App Java
 
