@@ -1,5 +1,12 @@
 # Projeto-Distribuidos
 
+## Dependência
+
+Ter instalado os seguintes pacotes:
+
+- Mosquitto
+- Maven
+
 ## Intruções para rodar o App Java
 
 - Rodar o mosquito via terminal
