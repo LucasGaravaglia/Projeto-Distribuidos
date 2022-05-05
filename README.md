@@ -2,22 +2,32 @@
 
 ## Intruções para rodar o App Java
 
-    * Entrar na pasta do app
-    ```
-    cd javaApp
-    ```
+- Rodar o mosquito via terminal
 
-    * Download de dependências
-    ```
-    mvn dependency:resolve
-    ```
+```bash
+mosquitto_sub -d -t foo
+```
 
-    * Compilação
-    ```
-    mvn package
-    ```
+- Entrar na pasta do app
 
-    * Execução
-    ```
-    mvn package
-    ```
+```bash
+cd javaApp
+```
+
+- Download de dependências
+
+```bash
+mvn dependency:resolve
+```
+
+- Compilação
+
+```bash
+mvn package
+```
+
+- Execução
+
+```bash
+mvn package
+```
