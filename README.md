@@ -29,5 +29,5 @@ mvn package
 - Execução
 
 ```bash
-mvn package
+mvn exec:java
 ```
