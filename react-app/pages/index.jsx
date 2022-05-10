@@ -7,6 +7,14 @@ import { signInWithGoogle } from "../utils/firebase";
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [tweet, setTweet] = useState("");
+
+  function publishTweet() {
+    if (tweet.length > 1) {
+      console.log(tweet);
+      setTweet("");
+    }
+  }
 
   async function signIn() {
     const u = await signInWithGoogle();
@@ -61,7 +69,9 @@ export default function Home() {
             _focus={{
               outline: "none",
             }}
+            onChange={(e) => setTweet(e.target.value)}
             maxLength="140"
+            value={tweet}
           ></Input>
         </Flex>
         <Flex
@@ -70,7 +80,12 @@ export default function Home() {
           borderBottom="1px solid #8f8f8f6a"
           padding={"5px 0"}
         >
-          <Button bg="#671df0" color="#FFF" borderRadius={"40px"}>
+          <Button
+            onClick={publishTweet}
+            bg="#671df0"
+            color="#FFF"
+            borderRadius={"40px"}
+          >
             Tweet
           </Button>
         </Flex>
