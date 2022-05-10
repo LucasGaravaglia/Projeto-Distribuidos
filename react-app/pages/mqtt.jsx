@@ -1,48 +1,38 @@
+import React, { useEffect, useState } from "react";
 import mqtt from "mqtt";
-import { useEffect, useState } from "react";
-// const client = mqtt.connect("mqtt://127.0.0.1");
 
-// client.on("connect", function () {
-//   console.log("connect");
-// });
-
-export default function Mqtt() {
-  const [client, setClient] = useState(null);
-  const [connectStatus, setConnectStatus] = useState(null);
-
-  const mqttConnect = (host, mqttOption) => {
-    setConnectStatus("Connecting");
-    setClient(mqtt.connect(host));
-  };
+export default () => {
+  const [connectionStatus, setConnectionStatus] = React.useState(false);
+  const [messages, setMessages] = React.useState([]);
+  const [client, setClient] = useState(mqtt.connect("mqtt://127.0.0.1:9001"));
 
   useEffect(() => {
-    if (client) {
-      console.log(client);
-      client.on("connect", () => {
-        setConnectStatus("Connected");
-      });
-      client.on("error", (err) => {
-        console.error("Connection error: ", err);
-        client.end();
-      });
-      client.on("reconnect", () => {
-        setConnectStatus("Reconnecting");
-      });
-      client.on("message", (topic, message) => {
-        const payload = { topic, message: message.toString() };
-        setPayload(payload);
-      });
-    }
+    client.on("connect", () => setConnectionStatus(true));
+    client.on("message", (topic, payload, packet) => {
+      console.log("new msg");
+      setMessages([...messages, messages.concat(payload.toString())]);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(client);
+    client.subscribe("foo");
   }, [client]);
 
-  function onClick() {
-    mqttConnect("mqtt://127.0.0.1:1883");
-  }
-
   return (
-    <div>
-      <h1>Helle</h1>
-      <button onClick={onClick}>Hello</button>
-    </div>
+    <>
+      {messages.map((message, i) => {
+        console.log(messages);
+        return <h2 key={i}>{message}</h2>;
+      })}
+
+      <button
+        onClick={() => {
+          console.log(client);
+        }}
+      >
+        Mostrar
+      </button>
+    </>
   );
-}
+};
