@@ -1,32 +1,28 @@
 import { Box, Button, Flex, Image, Input, Text } from "@chakra-ui/react";
-import Head from "next/head";
-
-import { useState } from "react";
-import styles from "../styles/Home.module.css";
-import { signInWithGoogle } from "../utils/firebase";
+import { BiLogOut } from "react-icons/bi";
+import { useState, useContext } from "react";
+import AuthContext from "../contexts/AuthContext";
+import MqttContext from "../contexts/MqttContext";
 
 export default function Home() {
-  const [user, setUser] = useState(null);
+  const { user, signIn, isLoading, signOut, isAuthenticated } =
+    useContext(AuthContext);
+
+  const { connectStatus, connectMqtt, publishInFeed, tweetsList } =
+    useContext(MqttContext);
   const [tweet, setTweet] = useState("");
 
   function publishTweet() {
     if (tweet.length > 1) {
       console.log(tweet);
+      publishInFeed(tweet);
       setTweet("");
     }
   }
 
-  async function signIn() {
-    const u = await signInWithGoogle();
-    if (u) {
-      setUser(u);
-      console.log(u);
-    }
-  }
-
-  if (user == null) {
+  if (!isAuthenticated || !connectStatus) {
     return (
-      <Flex bg="#3a2deb" w="100vw" h="100vh">
+      <Flex bg="#196ddc" w="100vw" h="100vh">
         <Flex
           margin="auto"
           width={"300px"}
@@ -37,15 +33,42 @@ export default function Home() {
           alignItems="center"
           justifyContent={"center"}
           flexDirection="column"
+          border="1px solid #c1c1c1"
         >
-          <Text fontWeight={"bold"}>Bem Vindo</Text>
-          <Button onClick={signIn}>Login With Google</Button>
+          <Text marginBottom={"15px"} fontWeight={"bold"}>
+            Bem Vindo
+          </Text>
+          <Button
+            isLoading={isLoading}
+            colorScheme={"blue"}
+            onClick={() => {
+              signIn();
+              connectMqtt();
+            }}
+          >
+            Login com Google
+          </Button>
         </Flex>
       </Flex>
     );
   }
   return (
     <Box bg="#f7f9f9">
+      <Box
+        width={"30px"}
+        height={"30px"}
+        position={"fixed"}
+        top="15px"
+        right="15px"
+        cursor={"pointer"}
+        _hover={{
+          opacity: 0.5,
+        }}
+        onClick={signOut}
+        zIndex={100}
+      >
+        <BiLogOut size={30} color="#c3c3c3" />
+      </Box>
       <Flex
         width={{ base: "100vw", md: "600px" }}
         bg="#FFF"
@@ -61,6 +84,7 @@ export default function Home() {
             w="50px"
             height={"50px"}
             borderRadius="50px"
+            referrerPolicy="no-referrer"
           />
           <Input
             placeholder="Whats's happening"
@@ -89,37 +113,55 @@ export default function Home() {
             Tweet
           </Button>
         </Flex>
-        {[1, 2, 3, 4].map((item, i) => {
-          return <Twitt key={i} />;
-        })}
-        {/* <Button onClick={signIn}>Login</Button> */}
+        {tweetsList.length > 0 &&
+          tweetsList.map((t, i) => {
+            return (
+              <Tweet
+                key={i}
+                userName={t.userName}
+                msg={t.msg}
+                photoUrl={t.photoUrl}
+                timestamp={t.timestamp}
+              />
+            );
+          })}
       </Flex>
     </Box>
   );
 }
 
-const Twitt = () => {
+const Tweet = ({ userName, msg, photoUrl, timestamp }) => {
   return (
     <Flex borderBottom="1px solid #8f8f8f6a" marginY="15px">
       <Image
-        // src={user && user.photoURL}
+        src={photoUrl}
         minH={"50px"}
         minW={"50px"}
         w="50px"
         height={"50px"}
         borderRadius="50px"
+        referrerPolicy="no-referrer"
       />
       <Flex flexDir={"column"} padding={"0 10px 15px 15px"}>
         <Text fontSize={"15px"} fontWeight="bold">
-          Fulano
+          {userName} - <strong>{getElapsedTime(timestamp)}</strong>
         </Text>
-        <Text fontSize={"15px"}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae ab
-          aliquid obcaecati optio, corrupti id. Ipsum, ipsa quae vel
-          voluptatibus vitae ab cumque! Quos iure harum reiciendis odio dolorem?
-          Quibusdam!
-        </Text>
+        <Text fontSize={"15px"}>{msg}</Text>
       </Flex>
     </Flex>
   );
 };
+
+function getElapsedTime(timestamp) {
+  const totalSeconds = (Date.now() - parseInt(timestamp)) / 1000;
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor((totalSeconds % 3600) % 60);
+
+  if (hours !== 0) {
+    return `${hours}h`;
+  } else if (minutes !== 0) {
+    return `${minutes}min`;
+  } else return `${seconds}seg`;
+}

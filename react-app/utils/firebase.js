@@ -35,4 +35,4 @@ const signInWithGoogle = async () => {
   }
 };
 
-export { signInWithGoogle };
+export { signInWithGoogle, auth, signOut };
