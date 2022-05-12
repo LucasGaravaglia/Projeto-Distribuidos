@@ -4,16 +4,15 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-/**
- * Hello world!
- *
- */
+import java.util.ArrayList; 
+
 public class App implements MqttCallback
 {
     MqttClient client;
+    ArrayList<String> messages = new ArrayList<String>(); 
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!!!!AA" );
+        // System.out.println( "Hello World!!!!AA" );
         App app = new App();
         app.doDemo();
     }
@@ -23,11 +22,8 @@ public class App implements MqttCallback
             client = new MqttClient("tcp://localhost:1883", "Sending");
             client.connect();
             client.setCallback(this);
-            client.subscribe("foo");
-            MqttMessage message = new MqttMessage();
-            message.setPayload("A single message from my computer fff"
-                    .getBytes());
-            client.publish("foo", message);
+            client.subscribe("feed");
+            client.subscribe("connection/new");
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -42,7 +38,27 @@ public class App implements MqttCallback
     @Override
     public void messageArrived(String topic, MqttMessage message)
             throws Exception {
-    System.out.println(message);   
+
+                if(topic.equals("connection/new")){
+                    
+            MqttMessage msg = new MqttMessage();
+            String a = "";
+            for(int i = 0;i < this.messages.size();i++){
+                a = a + this.messages.get(i);
+                if(i < this.messages.size() - 1){
+                    a = a + "¿";
+                }
+            }
+            msg.setPayload(a.toString().getBytes());
+            client.publish("messages/queue", msg);   
+        }
+        
+        if(topic.equals("feed")){
+            this.messages.add(message.toString());
+            
+        }
+        System.out.println(topic);
+        System.out.println(this.messages);   
     }
 
     @Override
