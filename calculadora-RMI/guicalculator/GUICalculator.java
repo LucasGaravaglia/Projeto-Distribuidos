@@ -4,9 +4,6 @@
  */
 package guicalculator;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import main.ICalculator;
 
 /**
@@ -14,7 +11,6 @@ import main.ICalculator;
  * @author lucas
  */
 public class GUICalculator extends javax.swing.JFrame {
-
     private ICalculator Calculator;
 
     /**
@@ -25,6 +21,7 @@ public class GUICalculator extends javax.swing.JFrame {
         this.jPanel1.setAlignmentX(CENTER_ALIGNMENT);
         this.jPanel1.setAlignmentY(CENTER_ALIGNMENT);
         this.Calculator = Calculator;
+
     }
 
     /**
@@ -51,9 +48,13 @@ public class GUICalculator extends javax.swing.JFrame {
         DigitX = new javax.swing.JButton();
         DigitSub = new javax.swing.JButton();
         DigitPlus = new javax.swing.JButton();
-        DigitEqual = new javax.swing.JButton();
+        DigitopenPar = new javax.swing.JButton();
         DigitDivision = new javax.swing.JButton();
         DigitClear = new javax.swing.JButton();
+        DigitEqual = new javax.swing.JButton();
+        DigitclosePar = new javax.swing.JButton();
+        DigitComma = new javax.swing.JButton();
+        DigitEqual1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
 
@@ -151,10 +152,10 @@ public class GUICalculator extends javax.swing.JFrame {
             }
         });
 
-        DigitEqual.setText("=");
-        DigitEqual.addActionListener(new java.awt.event.ActionListener() {
+        DigitopenPar.setText("(");
+        DigitopenPar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DigitEqualActionPerformed(evt);
+                DigitopenParActionPerformed(evt);
             }
         });
 
@@ -172,20 +173,56 @@ public class GUICalculator extends javax.swing.JFrame {
             }
         });
 
+        DigitEqual.setText("=");
+        DigitEqual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DigitEqualActionPerformed(evt);
+            }
+        });
+
+        DigitclosePar.setText(")");
+        DigitclosePar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DigitcloseParActionPerformed(evt);
+            }
+        });
+
+        DigitComma.setText(",");
+        DigitComma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DigitCommaActionPerformed(evt);
+            }
+        });
+
+        DigitEqual1.setFont(new java.awt.Font("sansserif", 0, 7)); // NOI18N
+        DigitEqual1.setText("+/-");
+        DigitEqual1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DigitEqual1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addContainerGap(33, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(Digit1, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(Digit1, javax.swing.GroupLayout.Alignment.TRAILING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(Digit4, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                        .addComponent(Digit4, javax.swing.GroupLayout.Alignment.TRAILING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(Digit7, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                        .addComponent(Digit7, javax.swing.GroupLayout.Alignment.TRAILING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(DigitClear, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                        .addComponent(DigitClear, javax.swing.GroupLayout.Alignment.TRAILING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(DigitEqual1, javax.swing.GroupLayout.Alignment.TRAILING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -200,7 +237,8 @@ public class GUICalculator extends javax.swing.JFrame {
                                                         javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addGroup(jPanel1Layout
-                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                false)
                                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                                 .addComponent(Digit2,
                                                                         javax.swing.GroupLayout.PREFERRED_SIZE, 40,
@@ -215,32 +253,64 @@ public class GUICalculator extends javax.swing.JFrame {
                                                                         javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(
-                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(DigitDivision,
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                        Short.MAX_VALUE)
+                                                                .addComponent(DigitComma,
                                                                         javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                                         javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(jPanel1Layout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(DigitPlus, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(DigitEqual,
                                                                 javax.swing.GroupLayout.PREFERRED_SIZE, 40,
-                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(DigitPlus, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(Digit8, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(jPanel1Layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addComponent(Digit8,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(Digit9,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addComponent(DigitopenPar,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(DigitclosePar,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(Digit9, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(DigitX, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGroup(jPanel1Layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(DigitDivision,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(DigitX, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                40, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addContainerGap(32, Short.MAX_VALUE)));
         jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap(23, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(DigitClear, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(DigitDivision, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(DigitopenPar, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(DigitclosePar, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(Digit7, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,11 +346,11 @@ public class GUICalculator extends javax.swing.JFrame {
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(DigitEqual, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(DigitDivision, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                        .addComponent(DigitComma, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(DigitClear, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                        .addComponent(DigitEqual1, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(53, 53, 53)));
+                                .addGap(18, 18, 18)));
 
         jScrollPane1.setViewportView(jTextPane1);
 
@@ -289,16 +359,18 @@ public class GUICalculator extends javax.swing.JFrame {
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addGap(205, 205, 205)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jScrollPane1)
-                                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap(311, Short.MAX_VALUE)));
+                                .addGap(43, 43, 43)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 243,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(43, Short.MAX_VALUE)));
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap(89, Short.MAX_VALUE)
+                                .addContainerGap(79, Short.MAX_VALUE)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -349,12 +421,8 @@ public class GUICalculator extends javax.swing.JFrame {
         this.jTextPane1.setText(this.jTextPane1.getText() + 0);
     }
 
-    private void DigitEqualActionPerformed(java.awt.event.ActionEvent evt) {
-
-        try {
-            this.jTextPane1.setText(this.Calculator.eval(this.jTextPane1.getText().toString()));
-        } catch (Exception e) {
-        }
+    private void DigitopenParActionPerformed(java.awt.event.ActionEvent evt) {
+        this.jTextPane1.setText(this.jTextPane1.getText() + '(');
     }
 
     private void DigitPlusActionPerformed(java.awt.event.ActionEvent evt) {
@@ -375,6 +443,25 @@ public class GUICalculator extends javax.swing.JFrame {
 
     private void DigitClearActionPerformed(java.awt.event.ActionEvent evt) {
         this.jTextPane1.setText("");
+    }
+
+    private void DigitEqualActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            this.jTextPane1.setText(this.Calculator.eval(this.jTextPane1.getText().toString()));
+        } catch (Exception e) {
+        }
+    }
+
+    private void DigitcloseParActionPerformed(java.awt.event.ActionEvent evt) {
+        this.jTextPane1.setText(this.jTextPane1.getText() + ')');
+    }
+
+    private void DigitCommaActionPerformed(java.awt.event.ActionEvent evt) {
+        this.jTextPane1.setText(this.jTextPane1.getText() + '.');
+    }
+
+    private void DigitEqual1ActionPerformed(java.awt.event.ActionEvent evt) {
+        this.jTextPane1.setText(this.jTextPane1.getText() + "(-");
     }
 
     public void run(ICalculator Calculator) {
@@ -420,11 +507,15 @@ public class GUICalculator extends javax.swing.JFrame {
     private javax.swing.JButton Digit8;
     private javax.swing.JButton Digit9;
     private javax.swing.JButton DigitClear;
+    private javax.swing.JButton DigitComma;
     private javax.swing.JButton DigitDivision;
     private javax.swing.JButton DigitEqual;
+    private javax.swing.JButton DigitEqual1;
     private javax.swing.JButton DigitPlus;
     private javax.swing.JButton DigitSub;
     private javax.swing.JButton DigitX;
+    private javax.swing.JButton DigitclosePar;
+    private javax.swing.JButton DigitopenPar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextPane jTextPane1;
