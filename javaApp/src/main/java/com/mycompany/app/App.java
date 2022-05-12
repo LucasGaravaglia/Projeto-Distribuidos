@@ -49,8 +49,10 @@ public class App implements MqttCallback
                     a = a + "¿";
                 }
             }
-            msg.setPayload(a.toString().getBytes());
-            client.publish("messages/queue", msg);   
+            if(!a.equals("")){
+                msg.setPayload(a.toString().getBytes());
+                client.publish("messages/queue", msg);   
+            }
         }
         
         if(topic.equals("feed")){

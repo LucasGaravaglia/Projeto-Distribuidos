@@ -43,6 +43,7 @@ const MqttContextProvider = ({ children }) => {
         }
         if (topic === "messages/queue") {
           const queue = payload.message.split("¿");
+          console.log(queue);
           setQueueBuffer(queue);
         }
       });
