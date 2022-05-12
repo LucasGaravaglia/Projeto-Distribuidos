@@ -13,7 +13,6 @@ public class Client implements Receiver {
 
         Client c = new Client();
         c.connect();
-        c.sendMsg("AAIAIAIAIAI");
     }
 
     public void receive(Message msg) {
