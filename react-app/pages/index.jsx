@@ -43,7 +43,6 @@ export default function Home() {
             colorScheme={"blue"}
             onClick={() => {
               signIn();
-              connectMqtt();
             }}
           >
             Login com Google

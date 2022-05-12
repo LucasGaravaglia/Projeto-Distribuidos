@@ -7,6 +7,7 @@ const MqttContextProvider = ({ children }) => {
   const [client, setClient] = useState(null);
   const [connectStatus, setConnectStatus] = useState(false);
   const [msgBuffer, setMsgBuffer] = useState(null);
+  const [queueBuffer, setQueueBuffer] = useState(null);
   const [tweetsList, setTweetsList] = useState([]);
 
   const { user, isAuthenticated } = useContext(AuthContext);
@@ -31,13 +32,20 @@ const MqttContextProvider = ({ children }) => {
         const payload = { topic, message: message.toString() };
         const payloadMessage = payload.message.split("&");
 
-        setMsgBuffer({
-          msg: payloadMessage[0],
-          userName: payloadMessage[1],
-          userEmail: payloadMessage[2],
-          photoUrl: payloadMessage[3],
-          timestamp: payloadMessage[4],
-        });
+        if (topic === "feed") {
+          setMsgBuffer({
+            msg: payloadMessage[0],
+            userName: payloadMessage[1],
+            userEmail: payloadMessage[2],
+            photoUrl: payloadMessage[3],
+            timestamp: payloadMessage[4],
+          });
+        }
+        if (topic === "messages/queue") {
+          const queue = payload.message.split("¿");
+          console.log(queue);
+          setQueueBuffer(queue);
+        }
       });
     }
   }, [client]);
@@ -55,6 +63,20 @@ const MqttContextProvider = ({ children }) => {
     });
   }
 
+  function publishNewConnection(msg) {
+    client.subscribe("connection/new", function (err) {
+      if (!err) {
+        client.publish("connection/new", `${user.email}`);
+      }
+    });
+
+    client.subscribe("messages/queue", function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
+
   function connectMqtt() {
     mqttConnect("mqtt://127.0.0.1:9001");
   }
@@ -64,6 +86,35 @@ const MqttContextProvider = ({ children }) => {
       setTweetsList((t) => [msgBuffer, ...t]);
     }
   }, [msgBuffer]);
+
+  useEffect(() => {
+    if (!!queueBuffer) {
+      const list = [];
+      queueBuffer.forEach((item) => {
+        const payloadMessage = item.split("&");
+        list.unshift({
+          msg: payloadMessage[0],
+          userName: payloadMessage[1],
+          userEmail: payloadMessage[2],
+          photoUrl: payloadMessage[3],
+          timestamp: payloadMessage[4],
+        });
+      });
+      setTweetsList(list);
+    }
+  }, [queueBuffer]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      connectMqtt();
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (connectStatus) {
+      publishNewConnection();
+    }
+  }, [connectStatus]);
   return (
     <MqttContext.Provider
       value={{
