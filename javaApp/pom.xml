@@ -16,6 +16,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
+    <!-- <exec.mainClass>com.mycompany.app.Server</exec.mainClass> -->
+    <!-- <exec.mainClass>com.mycompany.app.Client</exec.mainClass> -->
     <exec.mainClass>com.mycompany.app.App</exec.mainClass>
   </properties>
 
@@ -30,6 +32,11 @@
       <groupId>org.eclipse.paho</groupId>
       <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
       <version>1.2.5</version>
+  </dependency>
+  <dependency>
+    <groupId>org.jgroups</groupId>
+    <artifactId>jgroups</artifactId>
+    <version>5.0.0.Final</version>
   </dependency>
 
   </dependencies>

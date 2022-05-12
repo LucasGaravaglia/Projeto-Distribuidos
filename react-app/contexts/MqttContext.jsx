@@ -75,7 +75,7 @@ const MqttContextProvider = ({ children }) => {
   }
 
   function connectMqtt() {
-    mqttConnect("mqtt://179.106.206.29:9001");
+    mqttConnect("mqtt://localhost:9001");
   }
 
   useEffect(() => {
