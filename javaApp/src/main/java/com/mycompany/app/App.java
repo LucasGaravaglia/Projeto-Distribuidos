@@ -19,7 +19,7 @@ public class App implements MqttCallback
 
     public void doDemo() {
         try {
-            client = new MqttClient("tcp://localhost:1883", "Sending");
+            client = new MqttClient("tcp://179.106.206.29:1883", "Sending");
             client.connect();
             client.setCallback(this);
             client.subscribe("feed");

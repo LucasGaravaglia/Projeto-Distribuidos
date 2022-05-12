@@ -1,40 +1,33 @@
 import React, { createContext, useState, useEffect } from "react";
-import { signInWithGoogle, auth, signOut } from "../utils/firebase";
 
 const AuthContext = createContext();
+
+export function getRandomColor() {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setLoading] = useState(false);
 
-  async function signIn() {
-    setLoading(true);
-    const u = await signInWithGoogle();
-    if (u) {
-      setUser(u);
-      console.log(u);
-    }
-    setLoading(false);
-  }
-
-  async function signOutFirebase() {
-    setAuthenticated(false);
-    signOut(auth);
-  }
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((_user) => {
-      if (!!_user) {
-        setAuthenticated(true);
-        setUser(_user);
-      }
+  async function signIn(name) {
+    setUser({
+      name: name,
+      color: getRandomColor(),
     });
+    setAuthenticated(true);
+  }
 
-    return () => {
-      unsubscribe();
-    };
-  });
+  function signOut() {
+    setUser(null);
+    setAuthenticated(false);
+  }
 
   return (
     <AuthContext.Provider
@@ -43,7 +36,7 @@ const AuthContextProvider = ({ children }) => {
         signIn,
         isLoading,
         user,
-        signOut: signOutFirebase,
+        signOut,
       }}
     >
       {children}

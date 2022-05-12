@@ -5,6 +5,7 @@ import AuthContext from "../contexts/AuthContext";
 import MqttContext from "../contexts/MqttContext";
 
 export default function Home() {
+  const [name, setName] = useState("");
   const { user, signIn, isLoading, signOut, isAuthenticated } =
     useContext(AuthContext);
 
@@ -38,14 +39,25 @@ export default function Home() {
           <Text marginBottom={"15px"} fontWeight={"bold"}>
             Bem Vindo
           </Text>
+
+          <Input
+            w={"80%"}
+            margin="0px 0 20px 0"
+            placeholder="Seu nome aqui"
+            type={"text"}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <Button
             isLoading={isLoading}
             colorScheme={"blue"}
             onClick={() => {
-              signIn();
+              if (name.length >= 3 && name !== "null" && name !== "undefined") {
+                signIn(name);
+              }
             }}
           >
-            Login com Google
+            Fazer Login
           </Button>
         </Flex>
       </Flex>
@@ -78,12 +90,13 @@ export default function Home() {
         padding={"3%"}
       >
         <Flex>
-          <Image
-            src={user && user.photoURL}
+          <Box
+            minH={"50px"}
+            minW={"50px"}
             w="50px"
             height={"50px"}
             borderRadius="50px"
-            referrerPolicy="no-referrer"
+            bg={user.color}
           />
           <Input
             placeholder="Whats's happening"
@@ -117,9 +130,9 @@ export default function Home() {
             return (
               <Tweet
                 key={i}
-                userName={t.userName}
+                userName={t.name}
                 msg={t.msg}
-                photoUrl={t.photoUrl}
+                color={t.color}
                 timestamp={t.timestamp}
               />
             );
@@ -129,17 +142,16 @@ export default function Home() {
   );
 }
 
-const Tweet = ({ userName, msg, photoUrl, timestamp }) => {
+const Tweet = ({ userName, msg, color, timestamp }) => {
   return (
     <Flex borderBottom="1px solid #8f8f8f6a" marginY="15px">
-      <Image
-        src={photoUrl}
+      <Box
+        bg={color}
         minH={"50px"}
         minW={"50px"}
         w="50px"
         height={"50px"}
         borderRadius="50px"
-        referrerPolicy="no-referrer"
       />
       <Flex flexDir={"column"} padding={"0 10px 15px 15px"}>
         <Text fontSize={"15px"} fontWeight="bold">

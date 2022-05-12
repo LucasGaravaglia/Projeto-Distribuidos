@@ -35,10 +35,9 @@ const MqttContextProvider = ({ children }) => {
         if (topic === "feed") {
           setMsgBuffer({
             msg: payloadMessage[0],
-            userName: payloadMessage[1],
-            userEmail: payloadMessage[2],
-            photoUrl: payloadMessage[3],
-            timestamp: payloadMessage[4],
+            name: payloadMessage[1],
+            color: payloadMessage[2],
+            timestamp: payloadMessage[3],
           });
         }
         if (topic === "messages/queue") {
@@ -55,9 +54,7 @@ const MqttContextProvider = ({ children }) => {
       if (!err) {
         client.publish(
           "feed",
-          `${msg}&${user.displayName}&${user.email}&${
-            user.photoURL
-          }&${Date.now()}`
+          `${msg}&${user.name}&${user.color}&${Date.now()}`
         );
       }
     });
@@ -78,7 +75,7 @@ const MqttContextProvider = ({ children }) => {
   }
 
   function connectMqtt() {
-    mqttConnect("mqtt://127.0.0.1:9001");
+    mqttConnect("mqtt://179.106.206.29:9001");
   }
 
   useEffect(() => {
@@ -94,10 +91,9 @@ const MqttContextProvider = ({ children }) => {
         const payloadMessage = item.split("&");
         list.unshift({
           msg: payloadMessage[0],
-          userName: payloadMessage[1],
-          userEmail: payloadMessage[2],
-          photoUrl: payloadMessage[3],
-          timestamp: payloadMessage[4],
+          name: payloadMessage[1],
+          color: payloadMessage[2],
+          timestamp: payloadMessage[3],
         });
       });
       setTweetsList(list);
