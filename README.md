@@ -40,14 +40,8 @@ cd javaApp
 mvn dependency:resolve
 ```
 
-- Compilação
+- Compilação e Execução
 
 ```bash
-mvn package
-```
-
-- Execução
-
-```bash
-mvn exec:java
+mvn compile exec:java -Dexec.mainClass="com.mycompany.app.App"
 ```
