@@ -14,17 +14,17 @@ import main.ICalculator;
  * @author lucas
  */
 public class GUICalculator extends javax.swing.JFrame {
-    private ScriptEngineManager manager = new ScriptEngineManager();
-    private ScriptEngine engine = manager.getEngineByName("js");
+
+    private ICalculator Calculator;
 
     /**
      * Creates new form GUICalculator
      */
-    public GUICalculator() {
+    public GUICalculator(ICalculator Calculator) {
         initComponents();
         this.jPanel1.setAlignmentX(CENTER_ALIGNMENT);
         this.jPanel1.setAlignmentY(CENTER_ALIGNMENT);
-
+        this.Calculator = Calculator;
     }
 
     /**
@@ -350,8 +350,9 @@ public class GUICalculator extends javax.swing.JFrame {
     }
 
     private void DigitEqualActionPerformed(java.awt.event.ActionEvent evt) {
+
         try {
-            this.jTextPane1.setText(engine.eval(this.jTextPane1.getText().toString()).toString());
+            this.jTextPane1.setText(this.Calculator.eval(this.jTextPane1.getText().toString()));
         } catch (Exception e) {
         }
     }
@@ -402,7 +403,7 @@ public class GUICalculator extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GUICalculator().setVisible(true);
+                new GUICalculator(Calculator).setVisible(true);
             }
         });
     }

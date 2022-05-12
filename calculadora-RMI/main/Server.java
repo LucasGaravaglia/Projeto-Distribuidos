@@ -19,25 +19,23 @@ import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.UnicastRemoteObject;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 public class Server implements ICalculator {
     public Server() throws Exception {
         super();
     }
 
-    public int sum(int x, int y) {
-        return x + y;
-    }
+    public String eval(String s) {
+        try {
+            ScriptEngineManager manager = new ScriptEngineManager();
+            ScriptEngine engine = manager.getEngineByName("js");
+            return engine.eval(s).toString();
+        } catch (Exception e) {
+            return "Erro na operação";
+        }
 
-    public int subtract(int x, int y) {
-        return x - y;
-    }
-
-    public int multiplication(int x, int y) {
-        return x * y;
-    }
-
-    public int division(int x, int y) {
-        return x / y;
     }
 
     public static void main(String[] args) throws Exception {
