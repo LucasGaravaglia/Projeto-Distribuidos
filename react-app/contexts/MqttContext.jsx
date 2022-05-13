@@ -13,6 +13,8 @@ const MqttContextProvider = ({ children }) => {
   const [msgQueue, setMsgQueue] = useState([]);
   const [msgPrivate, setMsgPrivate] = useState([]);
   const [msgPrivateView, setMsgPrivateView] = useState([]);
+  const [usersQueue, setusersQueue] = useState({});
+  const [newQueueMsg, setNewQueueMsg] = useState();
 
   const { user, isAuthenticated } = useContext(AuthContext);
 
@@ -21,20 +23,32 @@ const MqttContextProvider = ({ children }) => {
     setClient(mqtt.connect(host, mqttOption));
   };
 
-  const sendAllMessages = () => {
-    if (msgPrivate.length > 0) {
-      client.subscribe(
-        `online/response/${msgPrivate[0].client}`,
-        function (err) {
+  const sendAllMessages = (id) => {
+    if (usersQueue[id]) {
+      if (usersQueue[id].length > 0) {
+        client.subscribe(`online/response/${id}`, function (err) {
           if (err) {
             console.log(err);
           }
-        }
-      );
-      client.publish(`online/${msgPrivate[0].client}`, "online");
-      // setTimeout(sendAllMessages, 5000);
+        });
+        client.publish(`online/${id}`, "online");
+        setTimeout(() => sendAllMessages(id), 1000);
+      }
+    } else {
+      setTimeout(() => sendAllMessages(id), 1000);
     }
   };
+
+  function sendQueuedMsg(id) {
+    if (usersQueue[id] && usersQueue[id].length > 0) {
+      const msg = usersQueue[id].shift();
+
+      client.publish(
+        `online/message/${id}`,
+        msg + "&" + user.name + "&" + user.color
+      );
+    }
+  }
 
   useEffect(() => {
     if (msgPrivate.length > 0) sendAllMessages();
@@ -55,7 +69,7 @@ const MqttContextProvider = ({ children }) => {
       client.on("message", (topic, message) => {
         const payload = { topic, message: message.toString() };
         const payloadMessage = payload.message.split("&");
-        console.log(topic, payloadMessage);
+        // console.log(topic, payloadMessage);
         if (topic === "feed") {
           setMsgBuffer({
             msg: payloadMessage[0],
@@ -65,22 +79,18 @@ const MqttContextProvider = ({ children }) => {
             mqttId: payloadMessage[4],
           });
         }
+        if (topic === `online/message/${client.options.clientId}`) {
+          console.log("New MSG:", payloadMessage);
+          setNewQueueMsg({
+            msg: payloadMessage[0],
+            name: payloadMessage[1],
+            color: payloadMessage[2],
+          });
+        }
 
         if (topic.includes("online/response")) {
           const id = topic.split("/")[2];
-          console.log("antes", msgPrivate);
-
-          const resClient = msgPrivate.findIndex((e) => e.client == id);
-          console.log(id);
-          console.log(msgPrivate);
-          console.log(resClient);
-          if (resClient != -1) {
-            client.publish(`online/message/${id}`, msgPrivate[resClient].msg);
-            const nVet = msgPrivate.filter((item, index) => {
-              index != resClient;
-            });
-            setMsgPrivate(nVet);
-          }
+          sendQueuedMsg(id);
         }
         if (topic === `online/${client.options.clientId}`) {
           client.publish(
@@ -123,13 +133,13 @@ const MqttContextProvider = ({ children }) => {
   }
 
   function publishInPrivate(msg, clientId) {
-    setMsgPrivate((v) => [
-      ...v,
-      {
-        msg: msg,
-        client: clientId,
-      },
-    ]);
+    if (usersQueue[clientId]) {
+      usersQueue[clientId].push(msg);
+    } else {
+      usersQueue[clientId] = [];
+      usersQueue[clientId].push(msg);
+    }
+    sendAllMessages(clientId);
   }
 
   function publishInFeed(msg) {
@@ -229,6 +239,7 @@ const MqttContextProvider = ({ children }) => {
         tweetsList,
         publishInPrivate,
         client,
+        newQueueMsg,
       }}
     >
       {children}

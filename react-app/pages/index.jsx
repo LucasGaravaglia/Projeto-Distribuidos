@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Image, Input, Text } from "@chakra-ui/react";
 import { BiLogOut } from "react-icons/bi";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import AuthContext from "../contexts/AuthContext";
 import MqttContext from "../contexts/MqttContext";
 import { BsFillChatDotsFill } from "react-icons/bs";
@@ -14,6 +14,7 @@ export default function Home() {
   const [msgMqttIdSend, setMsgMqttIdSend] = useState("");
   const [msgSend, setMsgSend] = useState("");
   const [msgColorSend, setMsgColordSend] = useState("");
+  const [isMsgQueue, setIsMsgQueue] = useState(false);
   const { user, signIn, isLoading, signOut, isAuthenticated } =
     useContext(AuthContext);
 
@@ -24,6 +25,7 @@ export default function Home() {
     publishInFeed,
     tweetsList,
     client,
+    newQueueMsg,
   } = useContext(MqttContext);
   const [tweet, setTweet] = useState("");
 
@@ -41,6 +43,13 @@ export default function Home() {
       setTweet("");
     }
   }
+
+  useEffect(() => {
+    if (typeof newQueueMsg !== "undefined") {
+      setIsMsgQueue(true);
+      setShowSendMsg(true);
+    }
+  }, [newQueueMsg]);
 
   if (!isAuthenticated) {
     return (
@@ -108,7 +117,9 @@ export default function Home() {
         >
           <Flex padding={"5px"} marginBottom="15px" alignItems="center">
             <Box
-              bg={msgColorSend}
+              bg={
+                isMsgQueue && newQueueMsg.msg ? newQueueMsg.color : msgColorSend
+              }
               minH={"50px"}
               minW={"50px"}
               w="50px"
@@ -118,30 +129,45 @@ export default function Home() {
             />
 
             <Text fontSize={"15px"} fontWeight="bold">
-              {msgNameSend}
+              {isMsgQueue && newQueueMsg.msg ? newQueueMsg.name : msgNameSend}
             </Text>
           </Flex>
-          <Flex w="100%" alignItems={"center"}>
-            <Input
-              // border={"1px solid #671DF0"}
-              // _focus={{ outline: "#671DF0" }}
-              colorScheme={"pink"}
-              boxShadow="rgba(149, 157, 165, 0.2) 0px 8px 24px;"
-              w={"100%"}
-              value={msgSend}
-              onChange={(e) => setMsgSend(e.target.value)}
-            />
+          <Flex w="100%" justifyContent={"space-between"} alignItems={"center"}>
+            {isMsgQueue && newQueueMsg.msg ? (
+              <Text>{newQueueMsg.msg}</Text>
+            ) : (
+              <Input
+                // border={"1px solid #671DF0"}
+                // _focus={{ outline: "#671DF0" }}
+                colorScheme={"pink"}
+                boxShadow="rgba(149, 157, 165, 0.2) 0px 8px 24px;"
+                w={"100%"}
+                value={msgSend}
+                onChange={(e) => setMsgSend(e.target.value)}
+              />
+            )}
             <Flex cursor={"pointer"}>
               <Box
-                onClick={() => setShowSendMsg(false)}
+                onClick={() => {
+                  setShowSendMsg(false);
+                  setIsMsgQueue(false);
+                }}
                 _hover={{ opacity: 0.5 }}
                 marginX={"10px"}
               >
                 <MdCancel size={30} color="#c3c3c3" />
               </Box>
-              <Box onClick={sendMsg} _hover={{ opacity: 0.5 }}>
-                <RiSendPlane2Fill size={30} color="#671DF0" />
-              </Box>
+              {!isMsgQueue && (
+                <Box
+                  onClick={() => {
+                    sendMsg();
+                    setMsgSend("");
+                  }}
+                  _hover={{ opacity: 0.5 }}
+                >
+                  <RiSendPlane2Fill size={30} color="#671DF0" />
+                </Box>
+              )}
             </Flex>
           </Flex>
         </Flex>
