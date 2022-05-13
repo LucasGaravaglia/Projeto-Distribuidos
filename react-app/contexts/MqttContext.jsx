@@ -13,7 +13,6 @@ const MqttContextProvider = ({ children }) => {
   const [msgQueue, setMsgQueue] = useState([]);
   const [msgPrivate, setMsgPrivate] = useState([]);
   const [msgPrivateView, setMsgPrivateView] = useState([]);
-  const [idSetTimeout, setIdSetTimeout] = useState(null);
 
   const { user, isAuthenticated } = useContext(AuthContext);
 
@@ -23,16 +22,22 @@ const MqttContextProvider = ({ children }) => {
   };
 
   const sendAllMessages = () => {
-    SetIdSetTimeout(
-      setInterval(() => {
-        client.publish(`online/${msgPrivate[0].clientId}`, msgPrivate.msg);
-      }, 1000)
-    );
+    if (msgPrivate.length > 0) {
+      client.subscribe(
+        `online/response/${msgPrivate[0].client}`,
+        function (err) {
+          if (err) {
+            console.log(err);
+          }
+        }
+      );
+      client.publish(`online/${msgPrivate[0].client}`, "online");
+      // setTimeout(sendAllMessages, 5000);
+    }
   };
 
   useEffect(() => {
-    if (!idSetTimeout && msgPrivate.length > 0) sendAllMessages();
-    else if (msgPrivate.length == 0) setIdSetTimeout(null);
+    if (msgPrivate.length > 0) sendAllMessages();
   }, [msgPrivate]);
 
   useEffect(() => {
@@ -50,7 +55,7 @@ const MqttContextProvider = ({ children }) => {
       client.on("message", (topic, message) => {
         const payload = { topic, message: message.toString() };
         const payloadMessage = payload.message.split("&");
-
+        console.log(topic, payloadMessage);
         if (topic === "feed") {
           setMsgBuffer({
             msg: payloadMessage[0],
@@ -60,18 +65,28 @@ const MqttContextProvider = ({ children }) => {
             mqttId: payloadMessage[4],
           });
         }
-        if (
-          !!msgPrivate[0] &&
-          !!msgPrivate[0].clientId &&
-          topic === `online/${msgPrivate[0].clientId}`
-        ) {
-          msgPrivate.shift();
+
+        if (topic.includes("online/response")) {
+          const id = topic.split("/")[2];
+          console.log("antes", msgPrivate);
+
+          const resClient = msgPrivate.findIndex((e) => e.client == id);
+          console.log(id);
+          console.log(msgPrivate);
+          console.log(resClient);
+          if (resClient != -1) {
+            client.publish(`online/message/${id}`, msgPrivate[resClient].msg);
+            const nVet = msgPrivate.filter((item, index) => {
+              index != resClient;
+            });
+            setMsgPrivate(nVet);
+          }
         }
         if (topic === `online/${client.options.clientId}`) {
-          msgPrivateView.push({
-            msg: message,
-          });
-          console.log(message);
+          client.publish(
+            `online/response/${client.options.clientId}`,
+            "response"
+          );
         }
         if (topic === "messages/queue") {
           const queue = payload.message.split("¿");
@@ -108,13 +123,13 @@ const MqttContextProvider = ({ children }) => {
   }
 
   function publishInPrivate(msg, clientId) {
-    msgPrivate.push({
-      msg: msg,
-      client: clientId,
-    });
-    msgPrivateView.push({
-      msg: msg,
-    });
+    setMsgPrivate((v) => [
+      ...v,
+      {
+        msg: msg,
+        client: clientId,
+      },
+    ]);
   }
 
   function publishInFeed(msg) {
@@ -127,13 +142,32 @@ const MqttContextProvider = ({ children }) => {
   }
 
   function publishNewConnection(msg) {
-    publish("connection/new", `${user.email}`);
+    publish("connection/new", `${user.name}`);
 
     client.subscribe("messages/queue", function (err) {
       if (err) {
         console.log(err);
       }
     });
+    client.subscribe("feed", function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+    client.subscribe(`online/${client.options.clientId}`, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+
+    client.subscribe(
+      `online/message/${client.options.clientId}`,
+      function (err) {
+        if (err) {
+          console.log(err);
+        }
+      }
+    );
   }
 
   function connectMqtt() {
