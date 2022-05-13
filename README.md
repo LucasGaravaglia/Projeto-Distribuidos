@@ -43,5 +43,5 @@ mvn dependency:resolve
 - Compilação e Execução
 
 ```bash
-mvn compile exec:java -Dexec.mainClass="com.mycompany.app.App"
+mvn compile exec:java -Dexec.mainClass="com.mycompany.app.App" -Dexec.args="192.168.1.111"
 ```

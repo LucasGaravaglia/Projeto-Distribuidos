@@ -16,9 +16,10 @@ public class App implements MqttCallback {
     ArrayList<String> messages = new ArrayList<String>();
 
     public static void main(String[] args) throws Exception {
+        
         App app = new App();
         app.groups();
-        app.doDemo();
+        app.doDemo(args[0]);
     }
 
     public void groups() throws Exception {
@@ -26,13 +27,13 @@ public class App implements MqttCallback {
         jSever.connect();
     }
 
-    public void doDemo() {
+    public void doDemo(String host) {
         Boolean connected = false;
 
         while (connected == false){
 
             try {
-                client = new MqttClient("tcp://localhost:1883", "Sending");
+                client = new MqttClient("tcp://"+ host +":1883", "Sending");
                 client.connect();
                 client.setCallback(this);
                 client.subscribe("feed");
