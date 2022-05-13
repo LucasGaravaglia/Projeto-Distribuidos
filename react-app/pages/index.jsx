@@ -3,8 +3,12 @@ import { BiLogOut } from "react-icons/bi";
 import { useState, useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
 import MqttContext from "../contexts/MqttContext";
+import { BsFillChatDotsFill } from "react-icons/bs";
+import { RiSendPlane2Fill } from "react-icons/ri";
+import { MdCancel } from "react-icons/md";
 
 export default function Home() {
+  const [showSendMsg, setShowSendMsg] = useState(false);
   const [name, setName] = useState("");
   const { user, signIn, isLoading, signOut, isAuthenticated } =
     useContext(AuthContext);
@@ -65,6 +69,64 @@ export default function Home() {
   }
   return (
     <Box bg="#f7f9f9">
+      <Flex
+        w="100vw"
+        h="100vh"
+        position={"fixed"}
+        zIndex="overlay"
+        top="0"
+        left="0"
+        bg="#000000a0"
+        // opacity={"0.5"}
+        alignItems="center"
+        justifyContent={"center"}
+        display={showSendMsg ? "flex" : "none"}
+      >
+        <Flex
+          flexDirection={"column"}
+          justifyContent="space-between"
+          w={{ base: "100vw", md: "50vw" }}
+          bg="#ffffff"
+          padding={"15px"}
+        >
+          <Flex padding={"5px"} marginBottom="15px" alignItems="center">
+            <Box
+              bg={"tomato"}
+              minH={"50px"}
+              minW={"50px"}
+              w="50px"
+              height={"50px"}
+              borderRadius="50px"
+              marginRight={"15px"}
+            />
+
+            <Text fontSize={"15px"} fontWeight="bold">
+              Fulne
+            </Text>
+          </Flex>
+          <Flex w="100%" alignItems={"center"}>
+            <Input
+              // border={"1px solid #671DF0"}
+              // _focus={{ outline: "#671DF0" }}
+              colorScheme={"pink"}
+              boxShadow="rgba(149, 157, 165, 0.2) 0px 8px 24px;"
+              w={"100%"}
+            />
+            <Flex cursor={"pointer"}>
+              <Box
+                onClick={() => setShowSendMsg(false)}
+                _hover={{ opacity: 0.5 }}
+                marginX={"10px"}
+              >
+                <MdCancel size={30} color="#c3c3c3" />
+              </Box>
+              <Box _hover={{ opacity: 0.5 }}>
+                <RiSendPlane2Fill size={30} color="#671DF0" />
+              </Box>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
       <Box
         width={"30px"}
         height={"30px"}
@@ -134,6 +196,7 @@ export default function Home() {
                 msg={t.msg}
                 color={t.color}
                 timestamp={t.timestamp}
+                onClickMsg={() => setShowSendMsg(true)}
               />
             );
           })}
@@ -142,23 +205,39 @@ export default function Home() {
   );
 }
 
-const Tweet = ({ userName, msg, color, timestamp }) => {
+const Tweet = ({ userName, msg, color, timestamp, onClickMsg }) => {
   return (
-    <Flex borderBottom="1px solid #8f8f8f6a" marginY="15px">
-      <Box
-        bg={color}
-        minH={"50px"}
-        minW={"50px"}
-        w="50px"
-        height={"50px"}
-        borderRadius="50px"
-      />
-      <Flex flexDir={"column"} padding={"0 10px 15px 15px"}>
-        <Text fontSize={"15px"} fontWeight="bold">
-          {userName} - <strong>{getElapsedTime(timestamp)}</strong>
-        </Text>
-        <Text fontSize={"15px"}>{msg}</Text>
+    <Flex
+      borderBottom="1px solid #8f8f8f6a"
+      marginY="15px"
+      justifyContent={"space-between"}
+      alignItems="center"
+      w="100%"
+    >
+      <Flex>
+        <Box
+          bg={color}
+          minH={"50px"}
+          minW={"50px"}
+          w="50px"
+          height={"50px"}
+          borderRadius="50px"
+        />
+        <Flex flexDir={"column"} padding={"0 10px 15px 15px"}>
+          <Text fontSize={"15px"} fontWeight="bold">
+            {userName} - <strong>{getElapsedTime(timestamp)}</strong>
+          </Text>
+          <Text fontSize={"15px"}>{msg}</Text>
+        </Flex>
       </Flex>
+      <Box
+        onClick={onClickMsg}
+        cursor={"pointer"}
+        color="#c3c3c3"
+        _hover={{ color: "#671DF0" }}
+      >
+        <BsFillChatDotsFill size={25} />
+      </Box>
     </Flex>
   );
 };
