@@ -12,6 +12,7 @@ const MqttContextProvider = ({ children }) => {
   const [tweetsList, setTweetsList] = useState([]);
   const [msgQueue, setMsgQueue] = useState([]);
   const [msgPrivate, setMsgPrivate] = useState([]);
+  const [msgPrivateView, setMsgPrivateView] = useState([]);
   const [idSetTimeout, setIdSetTimeout] = useState(null);
 
   const { user, isAuthenticated } = useContext(AuthContext);
@@ -59,13 +60,17 @@ const MqttContextProvider = ({ children }) => {
           });
         }
         if (
-          !!`online/${msgPrivate[0].clientId}` &&
+          !!msgPrivate[0] &&
+          !!msgPrivate[0].clientId &&
           topic === `online/${msgPrivate[0].clientId}`
         ) {
           msgPrivate.shift();
         }
         if (topic === `online/${client.option.clientId}`) {
-          console.log(message)
+          msgPrivateView.push({
+            msg: message,
+          });
+          console.log(message);
         }
         if (topic === "messages/queue") {
           const queue = payload.message.split("¿");
@@ -105,6 +110,9 @@ const MqttContextProvider = ({ children }) => {
     msgPrivate.push({
       msg: msg,
       client: clientId,
+    });
+    msgPrivateView.push({
+      msg: msg,
     });
   }
 
@@ -178,6 +186,7 @@ const MqttContextProvider = ({ children }) => {
         connectMqtt,
         publishInFeed,
         tweetsList,
+        publishInPrivate,
       }}
     >
       {children}
