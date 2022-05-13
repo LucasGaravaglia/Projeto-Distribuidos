@@ -16,7 +16,7 @@ public class App implements MqttCallback {
     ArrayList<String> messages = new ArrayList<String>();
 
     public static void main(String[] args) throws Exception {
-        
+
         App app = new App();
         app.groups();
         app.doDemo(args[0]);
@@ -30,26 +30,26 @@ public class App implements MqttCallback {
     public void doDemo(String host) {
         Boolean connected = false;
 
-        while (connected == false){
+        while (connected == false) {
 
             try {
-                client = new MqttClient("tcp://"+ host +":1883", "Sending");
+                client = new MqttClient("tcp://" + host + ":1883", "Sending");
                 client.connect();
                 client.setCallback(this);
                 client.subscribe("feed");
-            client.subscribe("connection/new");
-            connected = true;
-        } catch (MqttException e) {
-            // e.printStackTrace();
-            System.out.println("Reconnecting");
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                client.subscribe("connection/new");
+                connected = true;
+            } catch (MqttException e) {
+                // e.printStackTrace();
+                System.out.println("Reconnecting");
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         }
-    }
     }
 
     @Override
