@@ -23,7 +23,7 @@ const MqttContextProvider = ({ children }) => {
 
   const sendAllMessages = () => {
     SetIdSetTimeout(
-      setTimeout(() => {
+      setInterval(() => {
         client.publish(`online/${msgPrivate[0].clientId}`, msgPrivate.msg);
       }, 1000)
     );
