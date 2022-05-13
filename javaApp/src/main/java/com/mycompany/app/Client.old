@@ -1,0 +1,28 @@
+// package com.mycompany.app;
+
+// import org.jgroups.JChannel;
+// import org.jgroups.Message;
+// import org.jgroups.Receiver;
+
+// public class Client implements Receiver {
+
+// LogTwitter view;
+
+// public static void main(String[] args) throws Exception {
+// LogTwitter view = new LogTwitter();
+// view.run();
+// Client c = new Client();
+// c.connect();
+// }
+
+// public void receive(Message msg) {
+// String a = (String) msg.getObject();
+// System.out.println(a);
+// }
+
+// private void connect() throws Exception {
+// channel = new JChannel().setReceiver(this).connect("dashboard"); // use the
+// default config, udp.xml
+// }
+
+// }
