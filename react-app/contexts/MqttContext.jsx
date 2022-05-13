@@ -57,6 +57,7 @@ const MqttContextProvider = ({ children }) => {
             name: payloadMessage[1],
             color: payloadMessage[2],
             timestamp: payloadMessage[3],
+            mqttId: payloadMessage[4],
           });
         }
         if (
@@ -66,7 +67,7 @@ const MqttContextProvider = ({ children }) => {
         ) {
           msgPrivate.shift();
         }
-        if (topic === `online/${client.option.clientId}`) {
+        if (topic === `online/${client.options.clientId}`) {
           msgPrivateView.push({
             msg: message,
           });
@@ -117,7 +118,12 @@ const MqttContextProvider = ({ children }) => {
   }
 
   function publishInFeed(msg) {
-    publish("feed", `${msg}&${user.name}&${user.color}&${Date.now()}`);
+    publish(
+      "feed",
+      `${msg}&${user.name}&${user.color}&${Date.now()}&${
+        client.options.clientId
+      }`
+    );
   }
 
   function publishNewConnection(msg) {
@@ -162,6 +168,7 @@ const MqttContextProvider = ({ children }) => {
           name: payloadMessage[1],
           color: payloadMessage[2],
           timestamp: payloadMessage[3],
+          mqttId: payloadMessage[4],
         });
       });
       setTweetsList(list);
@@ -187,6 +194,7 @@ const MqttContextProvider = ({ children }) => {
         publishInFeed,
         tweetsList,
         publishInPrivate,
+        client,
       }}
     >
       {children}

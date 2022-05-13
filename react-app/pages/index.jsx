@@ -10,12 +10,29 @@ import { MdCancel } from "react-icons/md";
 export default function Home() {
   const [showSendMsg, setShowSendMsg] = useState(false);
   const [name, setName] = useState("");
+  const [msgNameSend, setMsgNameSend] = useState("");
+  const [msgMqttIdSend, setMsgMqttIdSend] = useState("");
+  const [msgSend, setMsgSend] = useState("");
+  const [msgColorSend, setMsgColordSend] = useState("");
   const { user, signIn, isLoading, signOut, isAuthenticated } =
     useContext(AuthContext);
 
-  const { connectStatus, connectMqtt, publishInFeed, tweetsList } =
-    useContext(MqttContext);
+  const {
+    publishInPrivate,
+    connectStatus,
+    connectMqtt,
+    publishInFeed,
+    tweetsList,
+    client,
+  } = useContext(MqttContext);
   const [tweet, setTweet] = useState("");
+
+  function sendMsg() {
+    if (msgSend.length > 0) {
+      publishInPrivate(msgSend, msgMqttIdSend);
+      setShowSendMsg(false);
+    }
+  }
 
   function publishTweet() {
     if (tweet.length > 1) {
@@ -91,7 +108,7 @@ export default function Home() {
         >
           <Flex padding={"5px"} marginBottom="15px" alignItems="center">
             <Box
-              bg={"tomato"}
+              bg={msgColorSend}
               minH={"50px"}
               minW={"50px"}
               w="50px"
@@ -101,7 +118,7 @@ export default function Home() {
             />
 
             <Text fontSize={"15px"} fontWeight="bold">
-              Fulne
+              {msgNameSend}
             </Text>
           </Flex>
           <Flex w="100%" alignItems={"center"}>
@@ -111,6 +128,8 @@ export default function Home() {
               colorScheme={"pink"}
               boxShadow="rgba(149, 157, 165, 0.2) 0px 8px 24px;"
               w={"100%"}
+              value={msgSend}
+              onChange={(e) => setMsgSend(e.target.value)}
             />
             <Flex cursor={"pointer"}>
               <Box
@@ -120,7 +139,7 @@ export default function Home() {
               >
                 <MdCancel size={30} color="#c3c3c3" />
               </Box>
-              <Box _hover={{ opacity: 0.5 }}>
+              <Box onClick={sendMsg} _hover={{ opacity: 0.5 }}>
                 <RiSendPlane2Fill size={30} color="#671DF0" />
               </Box>
             </Flex>
@@ -196,7 +215,14 @@ export default function Home() {
                 msg={t.msg}
                 color={t.color}
                 timestamp={t.timestamp}
-                onClickMsg={() => setShowSendMsg(true)}
+                mqttId={t.mqttId}
+                onClickMsg={(mqttId, userName, color) => {
+                  setMsgMqttIdSend(mqttId);
+                  setMsgNameSend(userName);
+                  setMsgColordSend(color);
+                  setShowSendMsg(true);
+                }}
+                showSendMsg={t.mqttId !== client.options.clientId}
               />
             );
           })}
@@ -205,7 +231,15 @@ export default function Home() {
   );
 }
 
-const Tweet = ({ userName, msg, color, timestamp, onClickMsg }) => {
+const Tweet = ({
+  userName,
+  msg,
+  color,
+  timestamp,
+  onClickMsg,
+  mqttId,
+  showSendMsg,
+}) => {
   return (
     <Flex
       borderBottom="1px solid #8f8f8f6a"
@@ -230,14 +264,16 @@ const Tweet = ({ userName, msg, color, timestamp, onClickMsg }) => {
           <Text fontSize={"15px"}>{msg}</Text>
         </Flex>
       </Flex>
-      <Box
-        onClick={onClickMsg}
-        cursor={"pointer"}
-        color="#c3c3c3"
-        _hover={{ color: "#671DF0" }}
-      >
-        <BsFillChatDotsFill size={25} />
-      </Box>
+      {showSendMsg && (
+        <Box
+          onClick={() => onClickMsg(mqttId, userName, color)}
+          cursor={"pointer"}
+          color="#c3c3c3"
+          _hover={{ color: "#671DF0" }}
+        >
+          <BsFillChatDotsFill size={25} />
+        </Box>
+      )}
     </Flex>
   );
 };
