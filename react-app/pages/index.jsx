@@ -21,7 +21,7 @@ export default function Home() {
     }
   }
 
-  if (!isAuthenticated || !connectStatus) {
+  if (!isAuthenticated) {
     return (
       <Flex bg="#196ddc" w="100vw" h="100vh">
         <Flex

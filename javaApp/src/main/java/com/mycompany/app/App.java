@@ -6,6 +6,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class App implements MqttCallback {
 
@@ -26,15 +27,28 @@ public class App implements MqttCallback {
     }
 
     public void doDemo() {
-        try {
-            client = new MqttClient("tcp://localhost:1883", "Sending");
-            client.connect();
-            client.setCallback(this);
-            client.subscribe("feed");
+        Boolean connected = false;
+
+        while (connected == false){
+
+            try {
+                client = new MqttClient("tcp://localhost:1883", "Sending");
+                client.connect();
+                client.setCallback(this);
+                client.subscribe("feed");
             client.subscribe("connection/new");
+            connected = true;
         } catch (MqttException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            System.out.println("Reconnecting");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         }
+    }
     }
 
     @Override

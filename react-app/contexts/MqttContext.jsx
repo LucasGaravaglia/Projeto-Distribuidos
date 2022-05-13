@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import mqtt from "mqtt";
 import AuthContext from "./AuthContext";
+import { color } from "@chakra-ui/react";
 const MqttContext = createContext();
 
 const MqttContextProvider = ({ children }) => {
@@ -9,6 +10,7 @@ const MqttContextProvider = ({ children }) => {
   const [msgBuffer, setMsgBuffer] = useState(null);
   const [queueBuffer, setQueueBuffer] = useState(null);
   const [tweetsList, setTweetsList] = useState([]);
+  const [msgQueue, setMsgQueue] = useState([]);
 
   const { user, isAuthenticated } = useContext(AuthContext);
 
@@ -26,7 +28,7 @@ const MqttContextProvider = ({ children }) => {
         client.end();
       });
       client.on("reconnect", () => {
-        setConnectStatus("Reconnecting");
+        setConnectStatus(false);
       });
       client.on("message", (topic, message) => {
         const payload = { topic, message: message.toString() };
@@ -42,30 +44,44 @@ const MqttContextProvider = ({ children }) => {
         }
         if (topic === "messages/queue") {
           const queue = payload.message.split("¿");
-          console.log(queue);
+          // console.log(queue);
           setQueueBuffer(queue);
         }
       });
     }
   }, [client]);
 
-  function publishInFeed(msg) {
-    client.subscribe("feed", function (err) {
-      if (!err) {
-        client.publish(
-          "feed",
-          `${msg}&${user.name}&${user.color}&${Date.now()}`
-        );
+  function publish(topic, msg) {
+    if (connectStatus) {
+      client.subscribe(topic, function (err) {
+        if (!err) {
+          client.publish(topic, msg);
+        }
+      });
+    } else {
+      msgQueue.push({
+        topic,
+        msg,
+      });
+
+      if (topic === "feed") {
+        setMsgBuffer({
+          msg: msg.split("&")[0],
+          name: user.name,
+          color: user.color,
+          timestamp: Date.now(),
+        });
       }
-    });
+    }
+    // console.log("publishing", connectStatus);
+  }
+
+  function publishInFeed(msg) {
+    publish("feed", `${msg}&${user.name}&${user.color}&${Date.now()}`);
   }
 
   function publishNewConnection(msg) {
-    client.subscribe("connection/new", function (err) {
-      if (!err) {
-        client.publish("connection/new", `${user.email}`);
-      }
-    });
+    publish("connection/new", `${user.email}`);
 
     client.subscribe("messages/queue", function (err) {
       if (err) {
@@ -83,6 +99,18 @@ const MqttContextProvider = ({ children }) => {
       setTweetsList((t) => [msgBuffer, ...t]);
     }
   }, [msgBuffer]);
+
+  useEffect(() => {
+    if (connectStatus && msgQueue.length > 0) {
+      setTweetsList([]);
+      setTimeout(() => {
+        msgQueue.forEach((item) => {
+          publish(item.topic, item.msg);
+        });
+        setMsgQueue([]);
+      }, 3000 + (Date.now() % 3000));
+    }
+  }, [connectStatus]);
 
   useEffect(() => {
     if (!!queueBuffer) {
