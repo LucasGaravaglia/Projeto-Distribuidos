@@ -11,6 +11,8 @@ const MqttContextProvider = ({ children }) => {
   const [queueBuffer, setQueueBuffer] = useState(null);
   const [tweetsList, setTweetsList] = useState([]);
   const [msgQueue, setMsgQueue] = useState([]);
+  const [msgPrivate, setMsgPrivate] = useState([]);
+  const [idSetTimeout, setIdSetTimeout] = useState(null);
 
   const { user, isAuthenticated } = useContext(AuthContext);
 
@@ -18,6 +20,20 @@ const MqttContextProvider = ({ children }) => {
     // setConnectStatus("Connecting");
     setClient(mqtt.connect(host, mqttOption));
   };
+
+  const sendAllMessages = () => {
+    SetIdSetTimeout(
+      setTimeout(() => {
+        client.publish(`online/${msgPrivate[0].clientId}`, msgPrivate.msg);
+      }, 1000)
+    );
+  };
+
+  useEffect(() => {
+    if (!idSetTimeout && msgPrivate.length > 0) sendAllMessages();
+    else if (msgPrivate.length == 0) setIdSetTimeout(null);
+  }, [msgPrivate]);
+
   useEffect(() => {
     if (client) {
       client.on("connect", () => {
@@ -41,6 +57,15 @@ const MqttContextProvider = ({ children }) => {
             color: payloadMessage[2],
             timestamp: payloadMessage[3],
           });
+        }
+        if (
+          !!`online/${msgPrivate[0].clientId}` &&
+          topic === `online/${msgPrivate[0].clientId}`
+        ) {
+          msgPrivate.shift();
+        }
+        if (topic === `online/${client.option.clientId}`) {
+          console.log(message)
         }
         if (topic === "messages/queue") {
           const queue = payload.message.split("¿");
@@ -74,6 +99,13 @@ const MqttContextProvider = ({ children }) => {
       }
     }
     // console.log("publishing", connectStatus);
+  }
+
+  function publishInPrivate(msg, clientId) {
+    msgPrivate.push({
+      msg: msg,
+      client: clientId,
+    });
   }
 
   function publishInFeed(msg) {
