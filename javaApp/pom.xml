@@ -6,9 +6,9 @@
 
   <groupId>com.mycompany.app</groupId>
   <artifactId>my-app</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
-  <name>my-app</name>
+  <name>javaApp</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -17,7 +17,7 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <!-- <exec.mainClass>com.mycompany.app.Server</exec.mainClass> -->
-    <!-- <exec.mainClass>com.mycompany.app.LogTwitter</exec.mainClass> -->
+    <exec.mainClass>com.mycompany.app.LogTwitter</exec.mainClass>
     <!-- <exec.mainClass>com.mycompany.app.App</exec.mainClass> -->
   </properties>
 
@@ -83,6 +83,19 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
+        <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.mycompany.app.LogTwitter</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
       </plugins>
     </pluginManagement>
   </build>

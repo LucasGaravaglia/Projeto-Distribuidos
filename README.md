@@ -45,3 +45,10 @@ mvn dependency:resolve
 ```bash
 mvn compile exec:java -Dexec.mainClass="com.mycompany.app.App" -Dexec.args="192.168.1.111"
 ```
+
+- Gerar .jar
+- Arquivo gerando dentro da paste target
+
+```bash
+mvn clean compile assembly:single
+```
